@@ -33,42 +33,27 @@ export class Game {
     }
 
     public Winner() : string {
-        //if the positions in first row are taken
-        if (this.isRowEmpty(0)) {
-            //if first row is full with same symbol
-            if (this._board.TileAt(0, 0)!.Symbol ==
-                    this._board.TileAt(0, 1)!.Symbol &&
-                    this._board.TileAt(0, 2)!.Symbol == this._board.TileAt(0, 1)!.Symbol) {
-                return this._board.TileAt(0, 0)!.Symbol;
-            }
+        
+        for (let i = 0; i < 3; i++){
+            if (this.allPositionsInRowTaken(i)) {
+                if (this.checkIfRowContainsSameSymbol(i)) {
+                    return this.getSymbolAtPosition(i,0);
+                }
+            } 
         }
-
-        //if the positions in first row are taken
-        if (this.isRowEmpty(1)) {
-            //if middle row is full with same symbol
-            if (this._board.TileAt(1, 0)!.Symbol ==
-                    this._board.TileAt(1, 1)!.Symbol &&
-                    this._board.TileAt(1, 2)!.Symbol ==
-                            this._board.TileAt(1, 1)!.Symbol) {
-                return this._board.TileAt(1, 0)!.Symbol;
-            }
-        }
-
-        //if the positions in first row are taken
-        if (this.isRowEmpty(2)) {
-            //if middle row is full with same symbol
-            if (this._board.TileAt(2, 0)!.Symbol ==
-                    this._board.TileAt(2, 1)!.Symbol &&
-                    this._board.TileAt(2, 2)!.Symbol ==
-                            this._board.TileAt(2, 1)!.Symbol) {
-                return this._board.TileAt(2, 0)!.Symbol;
-            }
-        }
-
         return ' ';
     }
 
-    private isRowEmpty(row:number) {
+    private checkIfRowContainsSameSymbol(row:number) : boolean{
+        return this.getSymbolAtPosition(row, 0) == this.getSymbolAtPosition(row, 1) &&
+            this.getSymbolAtPosition(row, 2) == this.getSymbolAtPosition(row, 1);
+    }
+
+    private getSymbolAtPosition(row: number, column: number) {
+        return this._board.symbolAtPosition(row,column);
+    }
+
+    private allPositionsInRowTaken(row:number) {
         return this.positionIsEmpty(row, 0) &&
             this.positionIsEmpty(row, 1) &&
             this.positionIsEmpty(row, 2);
@@ -86,15 +71,18 @@ interface Tile
     Symbol: string;
 }
 
+
 class Board
 {
     private _plays : Tile[] = [];
+    private numberOfRows : number = 3;
+    private numberOfColumns : number = 3;
 
     constructor()
     {
-        for (let i = 0; i < 3; i++)
+        for (let i = 0; i < this.numberOfRows; i++)
         {
-            for (let j = 0; j < 3; j++)
+            for (let j = 0; j < this.numberOfColumns; j++)
             {
                 const tile : Tile = {X :i, Y:j, Symbol:" "};
                 this._plays.push(tile);
@@ -102,14 +90,17 @@ class Board
         }
     }
 
-    public TileAt(x:  number, y: number): Tile {
-        return this._plays.find((t:Tile) => t.X == x && t.Y == y)!
+    public getNumberOfColumns(): number {
+        return this.numberOfColumns;
+    }
+
+    public symbolAtPosition(row:  number, column: number): string {
+        return this._plays.find((t:Tile) => t.X == row && t.Y == column)!.Symbol;
     }
 
     public AddTileAt(symbol: string, x: number, y: number) : void
     {
         const tile : Tile = {X :x, Y:y, Symbol:symbol};
-
         this._plays.find((t:Tile) => t.X == x && t.Y == y)!.Symbol = symbol;
     }
 }
